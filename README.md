@@ -1,1 +1,1 @@
-# AutoX
+# Mobile Testing Automation - AutoX
