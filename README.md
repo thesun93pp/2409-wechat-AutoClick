@@ -21,6 +21,8 @@ pip install flask-cors
 ```sh
 python server.py
 ```
+## UI
+<img src="https://img.shields.io/badge/Made_with-Photon_PUN-orange?logo=photon" alt="Photon PUN" />
 
 ## List Connected Devices!
 ```sh
