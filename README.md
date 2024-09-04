@@ -19,7 +19,12 @@ device_ids = ['device_id_1', 'device_id_2']  # Replace with your actual device I
 
 # Connect to devices
 devices = [u2.connect(device_id) for device_id in device_ids]
+
+# Process each device
+for d in devices:
+    process_device(d)
 ```
+
 ## List Connected Devices!
 ```sh
 adb devices
