@@ -14,13 +14,13 @@ C:\Program Files\Tesseract-OCR\
 
 ## Connect multi devices!
 ```sh
-    # Device IDs (replace with actual IDs if needed)
-    device_ids = ['device_id_1', 'device_id_2']  # Replace with your actual device IDs
+# Device IDs (replace with actual IDs if needed)
+device_ids = ['device_id_1', 'device_id_2']  # Replace with your actual device IDs
 
-    # Connect to devices
-    devices = [u2.connect(device_id) for device_id in device_ids]
+# Connect to devices
+devices = [u2.connect(device_id) for device_id in device_ids]
 ```
 ## List Connected Devices!
 ```sh
-    adb devices
+adb devices
 ```
