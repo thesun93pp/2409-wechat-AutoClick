@@ -19,15 +19,7 @@ pip install flask-cors
 
 ## Connect multi devices!
 ```sh
-# Device IDs (replace with actual IDs if needed)
-device_ids = ['device_id_1', 'device_id_2']  # Replace with your actual device IDs
-
-# Connect to devices
-devices = [u2.connect(device_id) for device_id in device_ids]
-
-# Process each device
-for d in devices:
-    process_device(d)
+python server.py
 ```
 
 ## List Connected Devices!
