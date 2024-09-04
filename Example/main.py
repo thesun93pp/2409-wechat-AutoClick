@@ -1,33 +1,37 @@
 import sys
 import uiautomator2 as u2
 import time
-from PIL import Image, ImageChops, ImageOps
-import pytesseract 
+from PIL import Image, ImageOps
+import pytesseract
 
-
-user= 'tuioai2'
+user = 'tuioai2'
 password = 'asdaXXX12@eze'
 phone = '0859781699'
 
-def SolveCapcha():
-    #Take screenshot
-    d.screenshot("photos/capcha/capcha.jpg")
+# Get the device IDs from command-line arguments
+# For example: python script.py emulator-5554 emulator-5556
+device_ids = sys.argv[1:]  # List of device IDs from command-line arguments
 
-def CheckCase():
-    #Take screenshot
-    d.screenshot("photos/home.jpg")
+def SolveCapcha(d, device_id):
+    # Take screenshot
+    d.screenshot(f"photos/{device_id}_capcha.jpg")
+
+def CheckCase(d, device_id):
+    # Take screenshot
+    d.screenshot(f"photos/{device_id}_home.jpg")
+    
     # Example usage
-    result_1 = pytesseract.image_to_string(Image.open("photos/home.jpg"))
+    result_1 = pytesseract.image_to_string(Image.open(f"photos/{device_id}_home.jpg"))
 
     print("================================================")
     print(result_1)
     print("================================================")
 
-    if "Invite another user to scan" or "Select a Security verification method" in result_1:
+    if "Invite another user to scan" in result_1 or "Select a Security verification method" in result_1:
         return False
     else:
         return True
-    
+
 def preprocess_image(image_path):
     img = Image.open(image_path)
     # Convert image to grayscale
@@ -36,116 +40,96 @@ def preprocess_image(image_path):
     # img = img.point(lambda x: 0 if x < 128 else 255, '1')
     return img
 
-d = u2.connect() # connect to device
-print(d.info)
-
-#Stop all app
-d.app_stop_all()
-
-
-#Mo app Wechat
-d.app_start("com.tencent.mm")
-
-#Dang ky bang so dien thoai
-d(resourceId="com.tencent.mm:id/mjy").click()
-
-#Dang ky qua so dien thoai
-d.xpath('//*[@resource-id="com.tencent.mm:id/avc"]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[1]').click()
-
-#Ten
-d(resourceId="com.tencent.mm:id/d98", text="Trần Anh").click()
-
-#Dien Ten
-d.send_keys(user, clear=True)
-
-#Dien thoai
-d(resourceId="com.tencent.mm:id/d98", text="Nhập số di động").click()
-
-#Dien so dien thoai
-d.send_keys(phone, clear=True)
-
-#Mat khau
-d(resourceId="com.tencent.mm:id/d98", text="Nhập mật khẩu").click()
-
-#Dien mat khau
-d.send_keys(password, clear=True)
-
-#Toi da doc va chap nhan dieu khoan dich vu
-d(resourceId="com.tencent.mm:id/lrt").click()
-
-#Chap nhan va tiep tuc
-d(resourceId="com.tencent.mm:id/lrn").click()
-
-time.sleep(10)
-
-#Toi da doc va thua nhan chinh sach bao mat
-#d.click(0.108, 0.655)
-d.click(0.143, 0.742)
-
-time.sleep(5)
-
-#Tiep
-d.click(0.484, 0.812)
-
-time.sleep(5)
-
-# Wait for the element to exist before clicking
-if d.xpath('//*[@resource-id="com.tencent.mm:id/jlh"]').exists:
-    print("Spaming Found!")
+def process_device(d, device_id):
+    # Stop all apps
     d.app_stop_all()
-    sys.exit()
 
+    # Open WeChat app
+    d.app_start("com.tencent.mm")
 
-#Xac Minh Bao Mat
-# Wait for the element to exist before clicking
-# Once the element exists, click it
-d.click(0.489, 0.847)
-time.sleep(5)
+    # Register via phone number
+    d(resourceId="com.tencent.mm:id/mjy").click()
+    d.xpath('//*[@resource-id="com.tencent.mm:id/avc"]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[1]').click()
 
-#Simple Mode or AI Capcha here
-SolveCapcha()
+    # Enter name
+    d(resourceId="com.tencent.mm:id/d98", text="Trần Anh").click()
+    d.send_keys(user, clear=True)
 
-d.click(0.211, 0.787)
+    # Enter phone number
+    d(resourceId="com.tencent.mm:id/d98", text="Nhập số di động").click()
+    d.send_keys(phone, clear=True)
 
+    # Enter password
+    d(resourceId="com.tencent.mm:id/d98", text="Nhập mật khẩu").click()
+    d.send_keys(password, clear=True)
 
-time.sleep(30)
+    # Agree to terms and conditions
+    d(resourceId="com.tencent.mm:id/lrt").click()
+    d(resourceId="com.tencent.mm:id/lrn").click()
 
-#Take screenshot
+    time.sleep(10)
 
-while True:
-    if CheckCase():
-        print("Done")
-    else:
-        print("Try to re sign up")
-        #Get back to form sign up
-        d.click(0.05, 0.063)
-        #Chap nhan va tiep tuc
-        d(resourceId="com.tencent.mm:id/lrn").click()
+    # Agree to privacy policy
+    d.click(0.143, 0.742)
+    time.sleep(5)
 
-        if d.xpath('//*[@resource-id="com.tencent.mm:id/jlh"]').exists:
-            d.app_stop_all()
+    # Next
+    d.click(0.484, 0.812)
+    time.sleep(5)
+
+    # Check if spamming is detected
+    if d.xpath('//*[@resource-id="com.tencent.mm:id/jlh"]').exists:
+        print("Spamming Found!")
+        d.app_stop_all()
+        return
+
+    # Verify security
+    d.click(0.489, 0.847)
+    time.sleep(5)
+
+    # Solve captcha
+    SolveCapcha(d, device_id)
+    d.click(0.211, 0.787)
+    time.sleep(30)
+
+    while True:
+        if CheckCase(d, device_id):
+            print("Done")
             break
+        else:
+            print("Try to re-sign up")
+            # Get back to form sign up
+            d.click(0.05, 0.063)
+            d(resourceId="com.tencent.mm:id/lrn").click()
 
-        time.sleep(5)
+            if d.xpath('//*[@resource-id="com.tencent.mm:id/jlh"]').exists:
+                d.app_stop_all()
+                break
 
-        #Xac minh bao mat
-        print("Xac minh bao mat....")
-        time.sleep(5)
+            time.sleep(5)
 
-        d.click(0.491, 0.852)
-        print("Xac minh bao mat xong")
+            # Verify security
+            print("Xac minh bao mat....")
+            time.sleep(5)
+            d.click(0.491, 0.852)
+            print("Xac minh bao mat xong")
 
-        if d.xpath('//*[@resource-id="com.tencent.mm:id/jlh"]').exists:
-            d.app_stop_all()
-            break
-        
-        time.sleep(5)
+            if d.xpath('//*[@resource-id="com.tencent.mm:id/jlh"]').exists:
+                d.app_stop_all()
+                break
 
-        #Capcha
-        print("Capcha")
-        d.click(0.244, 0.749)
-        time.sleep(30)
+            time.sleep(5)
 
-    time.sleep(2)
+            # Captcha
+            print("Capcha")
+            d.click(0.244, 0.749)
+            time.sleep(30)
 
+        time.sleep(2)
 
+# Connect to devices
+devices = [u2.connect(device_id) for device_id in device_ids]
+
+# Process each device
+for device_id, d in zip(device_ids, devices):
+    process_device(d, device_id)

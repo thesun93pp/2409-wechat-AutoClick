@@ -12,6 +12,11 @@ After installation, you will need to add the Tesseract installation path to your
 
 C:\Program Files\Tesseract-OCR\
 
+pip install Flask
+
+pip install flask-cors
+
+
 ## Connect multi devices!
 ```sh
 # Device IDs (replace with actual IDs if needed)
