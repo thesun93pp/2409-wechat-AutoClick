@@ -1,10 +1,13 @@
 # Mobile Testing Automation - AutoX
-
+```sh
 pip install -U uiautomator2
-
+```
+```sh
 pip install -U weditor
-
+```
+```sh
 pip install pytesseract Pillow
+```
 
 install [Download and install Tesseract from here.](https://github.com/UB-Mannheim/tesseract/wiki)
 
@@ -12,10 +15,13 @@ After installation, you will need to add the Tesseract installation path to your
 
 C:\Program Files\Tesseract-OCR\
 
+```sh
 pip install Flask
+```
 
+```sh
 pip install flask-cors
-
+```
 
 ## Connect multi devices!
 ```sh
