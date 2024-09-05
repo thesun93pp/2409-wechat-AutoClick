@@ -1,4 +1,4 @@
-# Mobile Testing Automation - AutoX
+# Mobile Testing Automation - AutoX (PIXEL 3A 1080X2220 DPI 441)
 ```sh
 pip install -U uiautomator2
 ```
