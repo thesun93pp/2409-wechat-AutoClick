@@ -23,6 +23,10 @@ pip install Flask
 pip install flask-cors
 ```
 
+```sh
+pip install opencv-python
+```
+
 ## Connect multi devices!
 ```sh
 python server.py
