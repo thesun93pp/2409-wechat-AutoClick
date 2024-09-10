@@ -13,7 +13,9 @@ install [Download and install Tesseract from here.](https://github.com/UB-Mannhe
 
 After installation, you will need to add the Tesseract installation path to your system’s PATH environment variable. Typically, the installation path is:
 
+```sh
 C:\Program Files\Tesseract-OCR\
+```
 
 ```sh
 pip install Flask
