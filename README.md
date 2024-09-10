@@ -8,11 +8,6 @@ pip install -U weditor
 ```sh
 pip install pytesseract Pillow
 ```
-
-install [Download and install Tesseract from here.](https://github.com/UB-Mannheim/tesseract/wiki)
-
-After installation, you will need to add the Tesseract installation path to your system’s PATH environment variable. Typically, the installation path is:
-
 ```sh
 C:\Program Files\Tesseract-OCR\
 ```
@@ -28,6 +23,12 @@ pip install flask-cors
 ```sh
 pip install opencv-python
 ```
+
+install [Download and install Tesseract from here.](https://github.com/UB-Mannheim/tesseract/wiki)
+
+After installation, you will need to add the Tesseract installation path to your system’s PATH environment variable. Typically, the installation path is:
+
+
 
 ## Connect multi devices!
 ```sh
