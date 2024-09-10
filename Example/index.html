@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Device Manager</title>
+    <link type="image/x-icon" href="../Example/photos/icon/icon.png" rel="shortcut icon">
     <!-- Bootstrap CSS from cdnjs -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <!-- jQuery from cdnjs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
+
 <body>
     <div class="container">
         <h1 class="my-4">Device Manager</h1>
@@ -18,48 +21,113 @@
         </div>
         <button id="activateButton" class="btn btn-primary">Activate Device</button>
         <button id="refreshButton" class="btn btn-primary">Refresh Device</button>
-        
+        <button id="activateAll" class="btn btn-primary">Activate All</button>
+
         <h2 class="my-4">History</h2>
         <div id="historyDiv" class="border p-3"></div>
+
+        <h2 class="my-4">Successful Devices</h2>
+        <table class="table table-bordered" id="successDevicesTable">
+            <thead>
+                <tr>
+                    <th>Device ID</th>
+                    <th>Device Name</th>
+                    <th>State</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Successful devices will be populated here -->
+            </tbody>
+        </table>
     </div>
 
     <script>
-        $(document).ready(function() {
+        let devices = []; // Array to store device info
+
+        $(document).ready(function () {
             function fetchDevices() {
                 $.ajax({
                     url: 'http://127.0.0.1:5000/api/devices',
                     method: 'GET',
-                    success: function(data) {
+                    success: function (data) {
                         const $select = $('#deviceSelect');
                         $select.empty();
+
+                        devices = data; // Store devices data
 
                         data.forEach(device => {
                             $select.append(new Option(device.name, device.id));
                         });
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.error('Error fetching devices:', status, error);
                     }
                 });
             }
-            $('#refreshButton').click(function(){
-                fetchDevices();
-            })
 
-            $('#activateButton').click(function() {
+            function fetchSuccessDevices() {
+                $.ajax({
+                    url: 'http://127.0.0.1:5000/api/devices/success',
+                    method: 'GET',
+                    success: function (data) {
+                        const $tableBody = $('#successDevicesTable tbody');
+                        $tableBody.empty();
+
+                        if (data.length === 0) {
+                            $tableBody.append('<tr><td colspan="3" class="text-center"></td></tr>');
+                        } else {
+                            devices = data; // Store devices data
+                            data.forEach(device => {
+                                $tableBody.append(`
+                                    <tr>
+                                        <td>${device.adb}</td>
+                                        <td>${device.user}</td>
+                                        <td>${device.state}</td>
+                                    </tr>
+                                `);
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching successful devices:', status, error);
+                    }
+                });
+            }
+
+            $('#refreshButton').click(function () {
+                fetchDevices();
+                fetchSuccessDevices();
+            });
+
+            $('#activateAll').click(function () {
+                if (devices.length === 0) {
+                    alert('No devices found to activate.');
+                    return;
+                }
+
+                devices.forEach(device => {
+                    activateDevice(device.id);
+                });
+            });
+
+            $('#activateButton').click(function () {
                 const deviceId = $('#deviceSelect').val();
-                
+
                 if (!deviceId) {
                     alert('Please select a device.');
                     return;
                 }
-                
+
+                activateDevice(deviceId);
+            });
+
+            function activateDevice(deviceId) {
                 $.ajax({
                     url: 'http://localhost:5000/activate',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({ device_id: deviceId }),
-                    success: function(response) {
+                    success: function (response) {
                         console.log(response);
 
                         // Update history if activation is successful
@@ -78,7 +146,7 @@
                             );
                         }
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.error('Error activating device:', status, error);
                         $('#historyDiv').append(
                             `<div class="alert alert-danger">
@@ -87,10 +155,19 @@
                         );
                     }
                 });
-            });
+            }
 
+            // Fetch devices and successful devices on page load
             fetchDevices();
+            fetchSuccessDevices();
+
+            // Fetch devices and successful devices every 5 seconds
+            setInterval(function () {
+                fetchDevices();
+                fetchSuccessDevices();
+            }, 5000); // 5000 milliseconds = 5 seconds
         });
     </script>
 </body>
+
 </html>
