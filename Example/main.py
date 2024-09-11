@@ -160,8 +160,9 @@ def process_device(d, device_id, username, password, phone):
         time.sleep(5)
         if picture_compare(d, "select all images that match"):
             print('Xac Minh Capcha [ PASSED ]')
-            captcha_result = captcha_process('https://api', device_id, d)
+            captcha_result = captcha_process('https://resolver.metajobs.vn/process-image', device_id, d)
             if captcha_result:
+                print(captcha_result)
                 handle_captcha_result(d, captcha_result)
                 time.sleep(0.5)
                 d.click(0.8815, 0.7455)
