@@ -26,19 +26,6 @@
         <h2 class="my-4">History</h2>
         <div id="historyDiv" class="border p-3"></div>
 
-        <h2 class="my-4">Successful Devices</h2>
-        <table class="table table-bordered" id="successDevicesTable">
-            <thead>
-                <tr>
-                    <th>Device ID</th>
-                    <th>Device Name</th>
-                    <th>State</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Successful devices will be populated here -->
-            </tbody>
-        </table>
     </div>
 
     <script>
@@ -61,35 +48,6 @@
                     },
                     error: function (xhr, status, error) {
                         console.error('Error fetching devices:', status, error);
-                    }
-                });
-            }
-
-            function fetchSuccessDevices() {
-                $.ajax({
-                    url: 'http://127.0.0.1:5000/api/devices/success',
-                    method: 'GET',
-                    success: function (data) {
-                        const $tableBody = $('#successDevicesTable tbody');
-                        $tableBody.empty();
-
-                        if (data.length === 0) {
-                            $tableBody.append('<tr><td colspan="3" class="text-center"></td></tr>');
-                        } else {
-                            devices = data; // Store devices data
-                            data.forEach(device => {
-                                $tableBody.append(`
-                                    <tr>
-                                        <td>${device.adb}</td>
-                                        <td>${device.user}</td>
-                                        <td>${device.state}</td>
-                                    </tr>
-                                `);
-                            });
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error fetching successful devices:', status, error);
                     }
                 });
             }
@@ -159,12 +117,10 @@
 
             // Fetch devices and successful devices on page load
             fetchDevices();
-            fetchSuccessDevices();
 
             // Fetch devices and successful devices every 5 seconds
             setInterval(function () {
                 fetchDevices();
-                fetchSuccessDevices();
             }, 5000); // 5000 milliseconds = 5 seconds
         });
     </script>
